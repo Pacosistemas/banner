@@ -7,6 +7,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.json">
   <title>LED Banner</title>
+
+  <!-- Fuente tipo Matriz LED / Digital -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
   <style>
     * {
       box-sizing: border-box;
@@ -23,6 +29,15 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
     }
+    /* Clases de Tipografía */
+    .font-sans {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-led {
+      font-family: 'VT323', monospace;
+      letter-spacing: 4px !important;
+    }
+
     /* Pantalla del Banner */
     #banner-screen {
       display: flex;
@@ -44,7 +59,7 @@
       text-shadow: 0 0 20px currentColor;
     }
 
-    /* En orientación apaisada (Landscape), la letra ocupa casi la altura total */
+    /* En orientación apaisada (Landscape) */
     @media (orientation: landscape) {
       #marquee-text {
         font-size: 88vh;
@@ -109,13 +124,23 @@
       cursor: pointer;
     }
 
+    /* Selector de Colores y Fuente */
+    .controls-row {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
     .color-picker {
       display: flex;
-      gap: 14px;
+      gap: 10px;
     }
     .color-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
@@ -124,6 +149,28 @@
     .color-btn.active {
       border-color: #ffffff;
       transform: scale(1.15);
+    }
+
+    .font-picker {
+      display: flex;
+      background: #1c1c1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 3px;
+    }
+    .font-btn {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #8e8e93;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .font-btn.active {
+      background: #2c2c2e;
+      color: #fff;
     }
 
     /* Sección de Frases Favoritas */
@@ -199,7 +246,7 @@
 
   <!-- Pantalla del Letrero -->
   <div id="banner-screen" onclick="toggleConfig()">
-    <div id="marquee-text">Toca para configurar</div>
+    <div id="marquee-text" class="font-sans">Toca para configurar</div>
   </div>
 
   <!-- Panel de Control -->
@@ -209,12 +256,19 @@
       <button class="save-btn" onclick="saveCurrentFavorite()" title="Guardar en favoritos">★</button>
     </div>
     
-    <div class="color-picker">
-      <div class="color-btn active" style="background: #ff2a2a;" onclick="setColor('#ff2a2a', this)"></div>
-      <div class="color-btn" style="background: #00ff66;" onclick="setColor('#00ff66', this)"></div>
-      <div class="color-btn" style="background: #00e5ff;" onclick="setColor('#00e5ff', this)"></div>
-      <div class="color-btn" style="background: #ffff00;" onclick="setColor('#ffff00', this)"></div>
-      <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+    <div class="controls-row">
+      <div class="color-picker">
+        <div class="color-btn active" style="background: #ff2a2a;" onclick="setColor('#ff2a2a', this)"></div>
+        <div class="color-btn" style="background: #00ff66;" onclick="setColor('#00ff66', this)"></div>
+        <div class="color-btn" style="background: #00e5ff;" onclick="setColor('#00e5ff', this)"></div>
+        <div class="color-btn" style="background: #ffff00;" onclick="setColor('#ffff00', this)"></div>
+        <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+      </div>
+
+      <div class="font-picker">
+        <button class="font-btn active" id="btn-font-sans" onclick="setFont('sans')">Normal</button>
+        <button class="font-btn" id="btn-font-led" onclick="setFont('led')">LED</button>
+      </div>
     </div>
 
     <!-- Lista de Favoritos -->
@@ -231,7 +285,8 @@
   <script>
     let animationId = null;
     let posX = 0;
-    const speed = 4; // Velocidad de desplazamiento
+    // Velocidad incrementada un 30%
+    const speed = 5.2; 
 
     const bannerScreen = document.getElementById('banner-screen');
     const textElement = document.getElementById('marquee-text');
@@ -240,6 +295,7 @@
     const favoritesList = document.getElementById('favorites-list');
 
     let currentColor = '#ff2a2a';
+    let currentFont = 'sans';
     let favorites = JSON.parse(localStorage.getItem('led_banner_favs') || '[]');
 
     function init() {
@@ -251,6 +307,21 @@
       textElement.style.color = color;
       document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
       if(element) element.classList.add('active');
+    }
+
+    function setFont(fontType) {
+      currentFont = fontType;
+      if (fontType === 'led') {
+        textElement.classList.remove('font-sans');
+        textElement.classList.add('font-led');
+        document.getElementById('btn-font-led').classList.add('active');
+        document.getElementById('btn-font-sans').classList.remove('active');
+      } else {
+        textElement.classList.remove('font-led');
+        textElement.classList.add('font-sans');
+        document.getElementById('btn-font-sans').classList.add('active');
+        document.getElementById('btn-font-led').classList.remove('active');
+      }
     }
 
     function animate() {
