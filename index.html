@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=2">
   <title>LED Banner</title>
 
-  <!-- Fuente tipo Matriz LED / Digital -->
+  <!-- Fuentes: Silkscreen (matriz de puntos estructurada) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -29,17 +29,19 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
     }
+
     /* Clases de Tipografía */
     .font-sans {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     .font-led {
-      font-family: 'VT323', monospace;
-      letter-spacing: 4px !important;
+      font-family: 'Silkscreen', monospace;
+      letter-spacing: 6px !important;
     }
 
     /* Pantalla del Banner */
     #banner-screen {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -48,28 +50,45 @@
       overflow: hidden;
       white-space: nowrap;
       cursor: pointer;
+      background-color: #050505;
     }
+
+    /* Máscara de Rejilla de Puntos LED (Dot-Matrix Overlay) */
+    #led-grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      background-image: radial-gradient(circle, transparent 35%, #000000 70%);
+      background-size: 8px 8px; /* Tamaño de los diodos LED */
+      opacity: 0.9;
+    }
+
     #marquee-text {
-      font-weight: 900;
+      font-weight: 700;
       line-height: 1;
       letter-spacing: 2px;
       padding-left: 100vw;
       display: inline-block;
       will-change: transform;
-      text-shadow: 0 0 20px currentColor;
+      z-index: 1;
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
     }
 
     /* En orientación apaisada (Landscape) */
     @media (orientation: landscape) {
       #marquee-text {
-        font-size: 88vh;
+        font-size: 80vh;
       }
     }
 
     /* En orientación vertical (Portrait) */
     @media (orientation: portrait) {
       #marquee-text {
-        font-size: 50vh;
+        font-size: 45vh;
       }
     }
 
@@ -246,7 +265,9 @@
 
   <!-- Pantalla del Letrero -->
   <div id="banner-screen" onclick="toggleConfig()">
-    <div id="marquee-text" class="font-sans">Toca para configurar</div>
+    <!-- Rejilla de diodos LED (Efecto Matriz) -->
+    <div id="led-grid-overlay"></div>
+    <div id="marquee-text" class="font-led">Toca para configurar</div>
   </div>
 
   <!-- Panel de Control -->
@@ -266,8 +287,8 @@
       </div>
 
       <div class="font-picker">
-        <button class="font-btn active" id="btn-font-sans" onclick="setFont('sans')">Normal</button>
-        <button class="font-btn" id="btn-font-led" onclick="setFont('led')">LED</button>
+        <button class="font-btn active" id="btn-font-led" onclick="setFont('led')">Matriz LED</button>
+        <button class="font-btn" id="btn-font-sans" onclick="setFont('sans')">Texto Liso</button>
       </div>
     </div>
 
@@ -285,7 +306,6 @@
   <script>
     let animationId = null;
     let posX = 0;
-    // Velocidad incrementada un 30%
     const speed = 5.2; 
 
     const bannerScreen = document.getElementById('banner-screen');
@@ -295,7 +315,7 @@
     const favoritesList = document.getElementById('favorites-list');
 
     let currentColor = '#ff2a2a';
-    let currentFont = 'sans';
+    let currentFont = 'led';
     let favorites = JSON.parse(localStorage.getItem('led_banner_favs') || '[]');
 
     function init() {
