@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.json?v=2">
+  <link rel="manifest" href="manifest.json?v=3">
   <title>LED Banner</title>
 
-  <!-- Fuentes: Silkscreen (matriz de puntos estructurada) -->
+  <!-- Tipografía de bloques de matriz compacta -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -25,21 +25,24 @@
       width: 100%;
       height: 100%;
       background-color: #000;
-      color: #ff2a2a; /* Rojo Neón LED */
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #ff2a2a;
+      font-family: system-ui, -apple-system, sans-serif;
       overflow: hidden;
     }
 
-    /* Clases de Tipografía */
+    /* Estilos de Fuente */
     .font-sans {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
+      letter-spacing: 2px;
     }
+    
+    /* Fuente LED compacta estilo panel diodo real */
     .font-led {
-      font-family: 'Silkscreen', monospace;
-      letter-spacing: 6px !important;
+      font-family: 'Press Start 2P', monospace;
+      letter-spacing: -4px !important; /* Letras juntas como en la imagen */
     }
 
-    /* Pantalla del Banner */
+    /* Pantalla Principal */
     #banner-screen {
       position: relative;
       display: flex;
@@ -50,10 +53,10 @@
       overflow: hidden;
       white-space: nowrap;
       cursor: pointer;
-      background-color: #050505;
+      background-color: #080808;
     }
 
-    /* Máscara de Rejilla de Puntos LED (Dot-Matrix Overlay) */
+    /* Rejilla de diodos ultra-fina sin separar las letras */
     #led-grid-overlay {
       position: absolute;
       top: 0;
@@ -62,34 +65,33 @@
       height: 100%;
       pointer-events: none;
       z-index: 2;
-      background-image: radial-gradient(circle, transparent 35%, #000000 70%);
-      background-size: 8px 8px; /* Tamaño de los diodos LED */
-      opacity: 0.9;
+      /* Diodos redondos densos */
+      background-image: 
+        radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 75%),
+        linear-gradient(to right, rgba(0,0,0,0.5) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.5) 1px, transparent 1px);
+      background-size: 5px 5px, 5px 5px, 5px 5px;
     }
 
     #marquee-text {
-      font-weight: 700;
+      font-weight: 400;
       line-height: 1;
-      letter-spacing: 2px;
       padding-left: 100vw;
       display: inline-block;
       will-change: transform;
       z-index: 1;
-      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+      /* Brillo intenso de neón LED */
+      filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 8px currentColor);
     }
 
-    /* En orientación apaisada (Landscape) */
     @media (orientation: landscape) {
-      #marquee-text {
-        font-size: 80vh;
-      }
+      #marquee-text.font-led { font-size: 65vh; }
+      #marquee-text.font-sans { font-size: 85vh; }
     }
 
-    /* En orientación vertical (Portrait) */
     @media (orientation: portrait) {
-      #marquee-text {
-        font-size: 45vh;
-      }
+      #marquee-text.font-led { font-size: 35vh; }
+      #marquee-text.font-sans { font-size: 50vh; }
     }
 
     /* Panel de Configuración */
@@ -129,9 +131,6 @@
       color: #fff;
       outline: none;
     }
-    input[type="text"]:focus {
-      border-color: #007aff;
-    }
 
     .save-btn {
       padding: 0 16px;
@@ -143,7 +142,6 @@
       cursor: pointer;
     }
 
-    /* Selector de Colores y Fuente */
     .controls-row {
       width: 100%;
       max-width: 480px;
@@ -192,7 +190,6 @@
       color: #fff;
     }
 
-    /* Sección de Frases Favoritas */
     .favorites-section {
       width: 100%;
       max-width: 480px;
@@ -229,9 +226,6 @@
       font-size: 1rem;
       cursor: pointer;
     }
-    .fav-item:active {
-      background: #2c2c2e;
-    }
     .fav-text {
       flex: 1;
       overflow: hidden;
@@ -263,14 +257,11 @@
 </head>
 <body>
 
-  <!-- Pantalla del Letrero -->
   <div id="banner-screen" onclick="toggleConfig()">
-    <!-- Rejilla de diodos LED (Efecto Matriz) -->
     <div id="led-grid-overlay"></div>
     <div id="marquee-text" class="font-led">Toca para configurar</div>
   </div>
 
-  <!-- Panel de Control -->
   <div id="config-panel">
     <div class="input-container">
       <input type="text" id="text-input" placeholder="Escribe tu mensaje..." value="¡Hola mundo!">
@@ -280,10 +271,10 @@
     <div class="controls-row">
       <div class="color-picker">
         <div class="color-btn active" style="background: #ff2a2a;" onclick="setColor('#ff2a2a', this)"></div>
+        <div class="color-btn" style="background: #ff9500;" onclick="setColor('#ff9500', this)"></div>
         <div class="color-btn" style="background: #00ff66;" onclick="setColor('#00ff66', this)"></div>
         <div class="color-btn" style="background: #00e5ff;" onclick="setColor('#00e5ff', this)"></div>
         <div class="color-btn" style="background: #ffff00;" onclick="setColor('#ffff00', this)"></div>
-        <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
       </div>
 
       <div class="font-picker">
@@ -292,12 +283,9 @@
       </div>
     </div>
 
-    <!-- Lista de Favoritos -->
     <div class="favorites-section">
       <div class="favorites-header">Frases Guardadas</div>
-      <div class="favorites-list" id="favorites-list">
-        <!-- Se rellena dinámicamente -->
-      </div>
+      <div class="favorites-list" id="favorites-list"></div>
     </div>
 
     <button class="play-btn" onclick="startBanner()">MOSTRAR BANNER</button>
@@ -374,8 +362,6 @@
         startBanner();
       }
     }
-
-    // --- Gestión de Favoritos (LocalStorage) ---
 
     function saveCurrentFavorite() {
       const text = textInput.value.trim();
