@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.json?v=5">
+  <link rel="manifest" href="manifest.json?v=6">
   <title>LED Banner</title>
 
-  <!-- Fuente tipo tubo de neón real -->
+  <!-- Fuentes Google: Outfit para neón fino y Orbitron para digital -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Orbitron:wght@800&family=Platypi:wght@800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800&family=Outfit:wght@200;300;700&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -24,8 +24,8 @@
     body, html {
       width: 100%;
       height: 100%;
-      background-color: #050505;
-      color: #ff2a2a;
+      background-color: #030304;
+      color: #ff2a8d;
       font-family: system-ui, -apple-system, sans-serif;
       overflow: hidden;
     }
@@ -41,11 +41,10 @@
       overflow: hidden;
       white-space: nowrap;
       cursor: pointer;
-      background-color: #030305;
+      background-color: #030304;
     }
 
     #marquee-text {
-      font-weight: 700;
       line-height: 1;
       padding-left: 100vw;
       display: inline-block;
@@ -58,43 +57,45 @@
     /* 1. Liso (Original) */
     .font-sans {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 700;
       letter-spacing: 0px;
       text-shadow: 0 0 12px currentColor;
     }
 
-    /* 2. Neón Tubo Real (Efecto como el de la foto) */
+    /* 2. Tubo Neón Fino Real */
     .font-neon-tube {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-weight: 800;
-      letter-spacing: 4px;
-      /* Núcleo blanco del tubo con resplandor intenso exterior */
-      color: #ffffff !important;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 200; /* Trazo muy fino estilo tubo */
+      letter-spacing: 6px;
+      color: #ffffff !important; /* Núcleo del gas en blanco */
+      /* La sombra usará la variable CSS --neon-glow */
       text-shadow:
-        0 0 5px #fff,
-        0 0 10px #fff,
-        0 0 20px currentColor,
-        0 0 40px currentColor,
-        0 0 80px currentColor,
-        0 0 90px currentColor;
+        0 0 4px #ffffff,
+        0 0 8px #ffffff,
+        0 0 18px var(--neon-glow),
+        0 0 35px var(--neon-glow),
+        0 0 70px var(--neon-glow),
+        0 0 100px var(--neon-glow);
     }
 
     /* 3. Digital */
     .font-digital {
       font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
       letter-spacing: 3px;
       text-shadow: 0 0 12px currentColor;
     }
 
-    /* Ajustes de Tamaño */
+    /* Ajustes de Tamaño por Orientación */
     @media (orientation: landscape) {
       #marquee-text.font-sans { font-size: 85vh; }
-      #marquee-text.font-neon-tube { font-size: 75vh; }
+      #marquee-text.font-neon-tube { font-size: 80vh; }
       #marquee-text.font-digital { font-size: 75vh; }
     }
 
     @media (orientation: portrait) {
       #marquee-text.font-sans { font-size: 45vh; }
-      #marquee-text.font-neon-tube { font-size: 40vh; }
+      #marquee-text.font-neon-tube { font-size: 42vh; }
       #marquee-text.font-digital { font-size: 40vh; }
     }
 
@@ -146,6 +147,7 @@
       cursor: pointer;
     }
 
+    /* Selector de Colores */
     .color-picker {
       display: flex;
       gap: 10px;
@@ -166,6 +168,7 @@
       transform: scale(1.15);
     }
 
+    /* Selector de Fuentes */
     .font-picker-container {
       width: 100%;
       max-width: 480px;
@@ -280,20 +283,20 @@
     
     <!-- Colores -->
     <div class="color-picker">
-      <div class="color-btn active" style="background: #ff2a8d;" onclick="setColor('#ff2a8d', this)"></div> <!-- Rosa Neón -->
-      <div class="color-btn" style="background: #8a2be2;" onclick="setColor('#8a2be2', this)"></div> <!-- Violeta Neón -->
+      <div class="color-btn active" style="background: #ff2a8d;" onclick="setColor('#ff2a8d', this)"></div> <!-- Rosa -->
+      <div class="color-btn" style="background: #9d00ff;" onclick="setColor('#9d00ff', this)"></div> <!-- Morado -->
       <div class="color-btn" style="background: #00e5ff;" onclick="setColor('#00e5ff', this)"></div> <!-- Azul Cían -->
       <div class="color-btn" style="background: #00ff66;" onclick="setColor('#00ff66', this)"></div> <!-- Verde -->
       <div class="color-btn" style="background: #ff9500;" onclick="setColor('#ff9500', this)"></div> <!-- Naranja -->
       <div class="color-btn" style="background: #ffff00;" onclick="setColor('#ffff00', this)"></div> <!-- Amarillo -->
     </div>
 
-    <!-- Fuentes limpias -->
+    <!-- Fuentes -->
     <div class="font-picker-container">
       <div class="font-picker-label">Estilo de Fuente</div>
       <div class="font-picker">
         <button class="font-btn active" id="btn-sans" onclick="setFont('sans', this)">Liso (Original)</button>
-        <button class="font-btn" id="btn-neon-tube" onclick="setFont('neon-tube', this)">Tubo Neón Real</button>
+        <button class="font-btn" id="btn-neon-tube" onclick="setFont('neon-tube', this)">Tubo Neón Fino</button>
         <button class="font-btn" id="btn-digital" onclick="setFont('digital', this)">Digital</button>
       </div>
     </div>
@@ -328,13 +331,16 @@
 
     function setColor(color, element) {
       currentColor = color;
+      
+      // Inyecta el color en la variable CSS de halo resplandeciente
+      document.documentElement.style.setProperty('--neon-glow', color);
+      
       if (!textElement.classList.contains('font-neon-tube')) {
         textElement.style.color = color;
       } else {
         textElement.style.color = '#ffffff';
       }
-      // Actualiza las sombras y color dinámico
-      textElement.style.setProperty('--neon-color', color);
+
       document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
       if(element) element.classList.add('active');
     }
