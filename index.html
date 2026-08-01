@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>LED Banner</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      color: #ff2a2a; /* Rojo Neón LED */
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+    /* Pantalla del Banner */
+    #banner-screen {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    #marquee-text {
+      font-size: 38vh; /* Tamaño ajustado para ~7-8 caracteres visibles */
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding-left: 100vw;
+      display: inline-block;
+      will-change: transform;
+      text-shadow: 0 0 15px rgba(255, 42, 42, 0.6);
+    }
+    /* Panel de Configuración */
+    #config-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 10, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      z-index: 10;
+    }
+    input[type="text"] {
+      width: 80%;
+      max-width: 400px;
+      padding: 15px;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      border: 2px solid #333;
+      background-color: #222;
+      color: #fff;
+      text-align: center;
+      outline: none;
+    }
+    .color-picker {
+      display: flex;
+      gap: 15px;
+    }
+    .color-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+    button.play-btn {
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #000;
+      background-color: #00ff66;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla del Letrero -->
+  <div id="banner-screen" onclick="toggleConfig()">
+    <div id="marquee-text">TOCA PARA CAMBIAR</div>
+  </div>
+
+  <!-- Panel de Control (se oculta al reproducir) -->
+  <div id="config-panel">
+    <input type="text" id="text-input" placeholder="Escribe tu mensaje..." value="HOLA MUNDO">
+    
+    <div class="color-picker">
+      <div class="color-btn" style="background: #ff2a2a;" onclick="setColor('#ff2a2a')"></div>
+      <div class="color-btn" style="background: #00ff66;" onclick="setColor('#00ff66')"></div>
+      <div class="color-btn" style="background: #00e5ff;" onclick="setColor('#00e5ff')"></div>
+      <div class="color-btn" style="background: #ffff00;" onclick="setColor('#ffff00')"></div>
+      <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff')"></div>
+    </div>
+
+    <button class="play-btn" onclick="startBanner()">MOSTRAR BANNER</button>
+  </div>
+
+  <script>
+    let animationId = null;
+    let posX = 0;
+    const speed = 4; // Velocidad del scroll
+
+    const bannerScreen = document.getElementById('banner-screen');
+    const textElement = document.getElementById('marquee-text');
+    const configPanel = document.getElementById('config-panel');
+    const textInput = document.getElementById('text-input');
+
+    function setColor(color) {
+      textElement.style.color = color;
+      textElement.style.textShadow = `0 0 15px ${color}`;
+    }
+
+    function animate() {
+      posX -= speed;
+      const textWidth = textElement.offsetWidth;
+      
+      // Reiniciar cuando el texto sale completamente de la pantalla
+      if (posX < -textWidth) {
+        posX = window.innerWidth;
+      }
+      
+      textElement.style.transform = `translateX(${posX}px)`;
+      animationId = requestAnimationFrame(animate);
+    }
+
+    function startBanner() {
+      const val = textInput.value.trim();
+      textElement.textContent = val !== "" ? val : "S.O.S";
+      configPanel.style.display = 'none';
+      
+      // Reiniciar animación
+      cancelAnimationFrame(animationId);
+      posX = window.innerWidth;
+      animate();
+    }
+
+    function toggleConfig() {
+      if (configPanel.style.display === 'none') {
+        configPanel.style.display = 'flex';
+        cancelAnimationFrame(animationId);
+      } else {
+        startBanner();
+      }
+    }
+  </script>
+</body>
+</html>
